@@ -1,0 +1,126 @@
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css')}}">  base 템플릿에 이미 작성된 부분이므로 제거-->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-dark text-center" style="vertical-align:middle;">
+                <th id="table1">번호</th>
+                <th>추천</th>
+                <th>제목</th>
+                <th>글쓴이</th>
+                <th>작성일시</th>
+                <th id="table_btn"><a href="{{ url_for('question.create')}}" class="btn btn-outline-light">질문 등록하기</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if question_list %}
+            {% for question in question_list.items %}
+            <tr class="text-center">
+                <td>{{ question_list.total - ((question_list.page-1)* question_list.per_page) - loop.index0 }}</td>
+                <td>
+                    {% if question.voter|length > 0 %}
+                    <span class="badge badge-warning px-2 py-1 text-dark ">{{question.voter|length}}</span>
+                    {% endif %}
+                </td>
+                <td class="text-left">
+                    <a href="{{ url_for('question.detail', question_id=question.id)}}">{{ question.subject }}</a>
+                    <!-- 질문 개수가 1개이상 있으면 -->
+                    {% if question.answer_set|length > 0 %} 
+                    <span class="text-danger small ml-2">({{ question.answer_set|length }})</span>
+                    <!-- 질문이 없으면 0으로 표시 -->
+                    {% else %}
+                    <span class="text-secondary small ml-2">(0)</span>
+                    {% endif %}
+                </td>
+                <td>{{ question.user.username }}</td>
+                <td>{{ question.create_date|datetime }}</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="3">등록된 질문이 없습니다.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    <!-- 페이징 처리 start -->
+    <ul class="pagination justify-content-center">
+        <!-- 이전페이지 -->
+        {% if question_list.has_prev %}
+        <li class="page-item">
+            <a class="page-link" data-page="{{ question_list.prev_num }}" href="#">이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="javascript:void(0)">이전</a>
+        </li>
+        {% endif %}
+        <!-- 페이지번호 -->
+        {% for page_num in question_list.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != question_list.page %}
+                <li class="page-item">
+                    <a class="page-link" data-page="{{ page_num }}" href="#">{{ page_num }}</a>
+                </li>
+                {% else %}
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="javascript:void(0)">{{ page_num }}</a>
+                </li>
+                {% endif %}
+            {% else %}
+                <li class="disabled">
+                    <a class="page-link" href="javascript:void(0)">...</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        <!-- 다음페이지 -->
+        {% if question_list.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="#" data-page="{{ question_list.next_num }}">다음</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="javascript:void(0)">다음</a>
+        </li>
+        {% endif %}
+    </ul>
+    <!-- pagination end -->
+
+</div>
+<form action="{{ url_for('question._list')}}" id="searchForm" method="get">
+    <input type="hidden" name="kw" id="kw" value="{{ kw or ''}}">
+    <input type="hidden" name="page" id="page" value="{{page}}">
+</form>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".page-link").on('click', function(){
+            $("#page").val($(this).data("page"));
+            $("#searchForm").submit();
+        });
+        $("#btn_search").on('click', function(){
+            $("#kw").val($(".kw").val());
+            $("#page").val(1);
+            $("#searchForm").submit();
+        });
+    });
+</script>
+{% endblock %}
+
+
+
+<!-- {% if question_list %}
+    <ul>
+    {% for question in question_list %}
+        <li><a href="{{ url_for('question.detail', question_id=question.id)}}">{{ question.subject }}</a></li> -->
+        <!-- 기존에 하드코딩된 URL 방식 '/detail/{{question.id}}/'을 url_for 함수를 사용해 question.detail 라우트 함수로 URL을 찾도록 변경 -->
+        <!-- question 블루프린트의 detail 함수를 보면 question_id 인수가 사전에 전달되어 함수 내부에 사용됨. 그러기 위해 question_id=question.id 이걸 추가한것-->
+    <!-- {% endfor %}
+    </ul>
+{% else %}
+    <p>질문이 없습니다.</p>
+{% endif %} -->

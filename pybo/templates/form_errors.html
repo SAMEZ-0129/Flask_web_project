@@ -1,0 +1,9 @@
+{% for field, errors in form.errors.items() %}
+<div class="alert alert-primary border-dark" role="alert" style="opacity: 0.7; margin: 1%;">
+   <strong>{{ form[field].label }}</strong>: {{', '.join(errors)}}
+</div>
+{% endfor %}
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-dark rounded-4 border-danger" role="alert" style="opacity: 0.7; margin: 1%;">{{ message }}</div>
+{% endfor %}

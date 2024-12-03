@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 기본 메타태그 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <!-- 부트스트랩 CSS -->
+    <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.min.css')}}">
+     <!-- 기본 CSS -->
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <title>MOS</title>
+</head>
+<body>
+  <!-- 네비게이션 바 추가(유지보수 편의성을 위해 분리) -->
+  {% include "navbar.html" %}
+
+  <!-- 기본 템플릿에 삽입할 내용 시작 -->
+  {% block content %}
+  {% endblock %}
+  <!-- 기본 템플릿에 삽입할 내용 종료 -->
+  <!-- jQuery JS -->
+  <script src="{{url_for('static', filename='jquery-3.4.1.min.js')}}"></script>
+  <!-- 부트스트랩 JS -->
+  <script src="{{url_for('static', filename='bootstrap.min.js')}}"></script>
+  <!-- JavaScript 시작 -->
+  {% block script %}
+  {% endblock %}
+</body>
+</html>

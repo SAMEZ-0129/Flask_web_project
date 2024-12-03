@@ -1,0 +1,67 @@
+/* textarea{
+    width: 100%;
+}
+input[type=submit]{
+    margin-top: 10px;
+} */
+
+/* 질문 조회 페이지 테이블 설정 */
+table{
+    box-shadow: 0 0 0 1px black;
+    border-radius: 5px;
+}
+th, td{
+    text-align: center;
+}
+#table1{
+    border-radius: 5px 0 0 0;
+}
+#table_btn{
+    border-radius: 0 5px 0 0;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+.bottom-0 {
+    bottom: 0;
+}
+
+.end-0 {
+    right: 0;
+}
+
+.m-2 {
+    margin: 0.5rem;
+}
+
+.comment{
+    border-top: dotted 1px #ddd;
+    font-size: 0.7em;
+}
+
+/* 얼럿 사라지는 애니메이션 */
+.alert {
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+.fade-out {
+    animation: fadeOut 1.5s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+    0% { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% { 
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
