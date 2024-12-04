@@ -58,10 +58,3 @@ class Comment(db.Model):
     answer_id = db.Column(db.Integer, db.ForeignKey('answer.id', ondelete='CASCADE'), nullable=True)
     answer = db.relationship('Answer', backref=db.backref('comment_set'))
     
-
-class Sheet(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.JSON)
-    create_date = db.Column(db.DateTime(), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
-    user = db.relationship('User', backref=db.backref('sheets'))

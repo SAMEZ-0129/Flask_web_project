@@ -43,14 +43,13 @@ def create_app(): # create_app 함수가 app 객체를 생성하고 반환 (애�
     socketio.init_app(app)
 
     # Blueprint
-    from .views import main_views, question_views, answer_views, auth_views, comment_views, vote_views,sheet_views # question_views 파일에 등록한 블루프린트 적용
+    from .views import main_views, question_views, answer_views, auth_views, comment_views, vote_views# question_views 파일에 등록한 블루프린트 적용
     app.register_blueprint(main_views.bp)
     app.register_blueprint(question_views.bp)
     app.register_blueprint(answer_views.bp)
     app.register_blueprint(auth_views.bp)
     app.register_blueprint(comment_views.bp)
     app.register_blueprint(vote_views.bp)
-    app.register_blueprint(sheet_views.bp)
 
     # 작성일자 표기 filter
     from .filter import format_datetime
