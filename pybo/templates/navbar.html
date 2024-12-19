@@ -32,8 +32,9 @@
           </li>
         {% endif %}
           <li class="navbar-item">
-            <a href="{{ url_for('merchant.merchant_list')}}" class="nav-link">오픈 건수 분석</a>
+            <a href="{{ url_for('merchant.merchant_list')}}" class="nav-link">오픈 건수</a>
           </li>
+          <li class="navbar-item"><a href="{{ url_for('work_status.work_status_list') }}" class="nav-link">업무 현황</a></li>
         </ul>
         <div class="col-4 input-group w-auto">
           <input class="form-control me-2 kw" value="{{ kw or '' }}">

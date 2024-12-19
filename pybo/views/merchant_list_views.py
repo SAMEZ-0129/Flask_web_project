@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os, io, base64
 import matplotlib.font_manager as fm
+import openpyxl
 
 bp = Blueprint('merchant', __name__, url_prefix='/merchant')
 UPLOAD_FOLDER = 'uploads'
@@ -30,7 +31,7 @@ def create_separated_category_chart(monthly_counts):
     ax1.set_xticklabels(monthly_counts.index.astype(str), rotation=45, ha='right')  # x축 레이블 기울이기
 
     # 그 외 그래프
-    ax2.bar(monthly_counts.index.astype(str), monthly_counts['그 외'], label='그 외', color='g', alpha=0.7)
+    ax2.bar(monthly_counts.index.astype(str), monthly_counts['그 외'], label='호스팅사', color='g', alpha=0.7)
     ax2.set_title('월별 호스팅사 건수')
     ax2.set_xlabel('월')
     ax2.set_ylabel('건수')
@@ -43,6 +44,25 @@ def create_separated_category_chart(monthly_counts):
     plt.savefig(buf, format='png')
     buf.seek(0)
     return base64.b64encode(buf.getvalue()).decode('utf-8')
+
+def read_filtered_data(file_path, filter_column, filter_value):
+    # 엑셀 파일 열기
+    workbook = openpyxl.load_workbook(file_path, data_only=True)
+    sheet = workbook.active
+
+    # 헤더 추출
+    headers = [cell.value for cell in sheet[1]]
+
+    # 필터가 적용된 데이터 읽기
+    filtered_data = []
+    for row in sheet.iter_rows(min_row=2):  # 첫 번째 행은 헤더로 가정
+        # 필터 조건에 따라 원하는 데이터를 추가
+        if row[filter_column].value == filter_value:  # filter_column 인덱스에 해당하는 값 체크
+            filtered_data.append([cell.value for cell in row])
+
+    # 결과를 Pandas DataFrame으로 변환
+    df = pd.DataFrame(filtered_data, columns=headers)
+    return df
 
 @bp.route('/list', methods=['GET', 'POST'])
 def merchant_list():
@@ -95,6 +115,28 @@ def merchant_list():
 
             # 인덱스를 정렬
             monthly_counts = monthly_counts.sort_index()
+
+
+             # 상반기와 하반기 건수 집계
+            first_half = monthly_counts.loc[monthly_counts.index <= '2024-06']
+            second_half = monthly_counts.loc[monthly_counts.index > '2024-06']
+
+            first_half_total = first_half.sum()
+            second_half_total = second_half.sum()
+
+            # 증가/감소 계산
+            independent_change = second_half_total['독립몰'] - first_half_total['독립몰']
+            non_independent_change = second_half_total['그 외'] - first_half_total['그 외']
+
+            independent_percentage = (independent_change / first_half_total['독립몰'] * 100) if first_half_total['독립몰'] > 0 else float('inf')
+            non_independent_percentage = (non_independent_change / first_half_total['그 외'] * 100) if first_half_total['그 외'] > 0 else float('inf')
+
+
+            # 그래프 생성
+            monthly_category_chart = create_separated_category_chart(monthly_counts)
+
+
+
             # 그래프 생성
             monthly_category_chart = create_separated_category_chart(monthly_counts)
 
@@ -112,9 +154,24 @@ def merchant_list():
                                    current_month=current_month,
                                    independent_count=independent_count,
                                    non_independent_count=non_independent_count,
-                                   monthly_category_chart=monthly_category_chart)
+                                   monthly_category_chart=monthly_category_chart,
+                                   independent_change=independent_change,
+                                   non_independent_change=non_independent_change,
+                                   independent_percentage=independent_percentage,
+                                   non_independent_percentage=non_independent_percentage,
+                                   first_half_total=first_half_total,
+                                   second_half_total=second_half_total)
         except Exception as e:
             flash(f'데이터 처리 중 오류가 발생했습니다: {e}')
             return redirect(request.url)
-
-    return render_template('open_merchant/merchant_list.html', current_month=None, independent_count=None, non_independent_count=None, monthly_category_chart=None)
+    
+    return render_template('open_merchant/merchant_list.html', current_month=None,
+                                   independent_count=None,
+                                   non_independent_count=None,
+                                   monthly_category_chart=None,
+                                   independent_change=None,
+                                   non_independent_change=None,
+                                   independent_percentage=None,
+                                   non_independent_percentage=None,
+                                   first_half_total=None,
+                                   second_half_total=None)

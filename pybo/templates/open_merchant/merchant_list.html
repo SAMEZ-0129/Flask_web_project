@@ -35,6 +35,17 @@
     <div class="bar-chart">
         <img src="data:image/png;base64,{{ monthly_category_chart }}" alt="Monthly Category Chart" class="img-fluid">
     </div>
+    {% if independent_change is not none %}
+        <h3>상반기와 하반기 비교</h3>
+        <p>상반기 독립몰 총 건수: {{ first_half_total['독립몰'] }}</p>
+        <p>하반기 독립몰 총 건수: {{ second_half_total['독립몰'] }}</p>
+        <p>독립몰 건수 변화: {{ independent_change }} ({{ independent_percentage | round(2) }}%)</p>
+
+        <p>상반기 호스팅사 총 건수: {{ first_half_total['그 외'] }}</p>
+        <p>하반기 호스팅사 총 건수: {{ second_half_total['그 외'] }}</p>
+        <p>호스팅사 건수 변화: {{ non_independent_change }} ({{ non_independent_percentage | round(2) }}%)</p>
+    {% endif %}
+
 </div>
 {% endblock %}
 
